@@ -8,7 +8,7 @@ class Num implements AST<number, Tag, number> {
   constructor(public value: number) {}
 
   visit() {
-    return this.value!;
+    return this.value;
   }
 }
 

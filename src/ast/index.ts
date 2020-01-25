@@ -1,3 +1,3 @@
 export * from './AST';
 export * from './Num';
-export * from './Operator';
+export * from './BinaryOperator';

@@ -4,18 +4,14 @@ term: factor ((MUL|DIV) factor)*
 factor: NUMBER | L_PAREN expr R_PAREN
 */
 
-import { Lexer, Token, TokenType } from '../calc/lexer';
-import { Num, Operator, AST } from '../ast';
+import { Token, TokenType } from '../calc/lexer';
+import { Num, BinaryOperator, AST } from '../ast';
 
 class ByRules {
   private index = 0;
   private current!: Token;
-  private tokens: readonly Token[] = [];
 
-  constructor(private input: string) {
-    const lexer = new Lexer(this.input);
-    this.tokens = lexer.getTokens();
-    console.log('\nTokens:', this.tokens, '\n');
+  constructor(private tokens: readonly Token[]) {
     this.current = this.tokens[this.index];
   }
 
@@ -25,7 +21,7 @@ class ByRules {
     return tree.visit();
   }
 
-  expr(): AST {
+  private expr(): AST {
     let node = this.term();
 
     while (
@@ -35,19 +31,19 @@ class ByRules {
 
       if (type === 'Minus') {
         this.eat('Minus');
-        node = new Operator((a, b) => a - b, node, this.term())
+        node = new BinaryOperator((a, b) => a - b, node, this.term())
       }
 
       if (type === 'Plus') {
         this.eat('Plus');
-        node = new Operator((a, b) => a + b, node, this.term())
+        node = new BinaryOperator((a, b) => a + b, node, this.term())
       }
     }
 
     return node;
   }
 
-  term(): AST {
+  private term(): AST {
     let node = this.factor();
 
     while (
@@ -57,19 +53,19 @@ class ByRules {
 
       if (type === 'Mul') {
         this.eat('Mul');
-        node = new Operator((a, b) => a * b, node, this.factor())
+        node = new BinaryOperator((a, b) => a * b, node, this.factor())
       }
 
       if (type === 'Div') {
         this.eat('Div');
-        node = new Operator((a, b) => a / b, node, this.factor())
+        node = new BinaryOperator((a, b) => a / b, node, this.factor())
       }
     }
 
     return node;
   }
 
-  factor(): AST {
+  private factor(): AST {
     const { value, type } = this.current;
     if (type === 'Number') {
       this.eat('Number');
@@ -80,11 +76,11 @@ class ByRules {
       this.eat('RightParen');
       return node;
     } else {
-      throw new Error('Failed to parse an expression');
+      throw new Error('Invalid expression');
     }
   }
 
-  eat(type: TokenType) {
+  private eat(type: TokenType) {
     if (this.current.type === type) {
       this.index += 1;
       this.current = this.tokens[this.index] || { type: 'STOP' };
