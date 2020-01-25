@@ -1,5 +1,5 @@
 import { Token } from './calc/lexer';
-import { ByRules } from './ByRules/ByRulesTest';
+import { ByRules } from './ByRules/ByRulesUnary';
 
 export function arithmetic(tokens: readonly Token[]) {
   const termMap = {

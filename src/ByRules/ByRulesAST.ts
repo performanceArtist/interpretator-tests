@@ -5,7 +5,7 @@ factor: NUMBER | L_PAREN expr R_PAREN
 */
 
 import { Token, TokenType } from '../calc/lexer';
-import { Num, BinaryOperator, AST } from '../ast';
+import { Value, BinaryOperator, AST } from '../ast';
 
 class ByRules {
   private index = 0;
@@ -69,7 +69,7 @@ class ByRules {
     const { value, type } = this.current;
     if (type === 'Number') {
       this.eat('Number');
-      return new Num(value);
+      return new Value(value);
     } else if (type === 'LeftParen') {
       this.eat('LeftParen');
       const node = this.expr();
