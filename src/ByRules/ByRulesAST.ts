@@ -5,7 +5,7 @@ factor: NUMBER | L_PAREN expr R_PAREN
 */
 
 import { Lexer, Token, TokenType } from '../calc/lexer';
-import { Num, Operator, VisitorASTNode } from '../ast';
+import { Num, Operator, AST } from '../ast';
 
 class ByRules {
   private index = 0;
@@ -25,7 +25,7 @@ class ByRules {
     return tree.visit();
   }
 
-  expr(): VisitorASTNode {
+  expr(): AST {
     let node = this.term();
 
     while (
@@ -47,7 +47,7 @@ class ByRules {
     return node;
   }
 
-  term(): VisitorASTNode {
+  term(): AST {
     let node = this.factor();
 
     while (
@@ -69,7 +69,7 @@ class ByRules {
     return node;
   }
 
-  factor(): VisitorASTNode {
+  factor(): AST {
     const { value, type } = this.current;
     if (type === 'Number') {
       this.eat('Number');

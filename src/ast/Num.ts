@@ -1,12 +1,11 @@
 import { AST } from './AST';
-import { Visitor } from './Visitor';
 
 type Tag = 'number';
 
-class Num extends AST<number, Tag> implements Visitor<number> {
-  constructor(value: number) {
-    super({ type: 'number', value });
-  }
+class Num implements AST<number, Tag, number> {
+  public type: Tag = 'number';
+
+  constructor(public value: number) {}
 
   visit() {
     return this.value!;
