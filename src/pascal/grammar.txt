@@ -1,0 +1,10 @@
+program: block DOT
+block: BEGIN statement_list END
+statement_list: statement (statement SEMI)*
+statement: block | assignment_statement | empty
+assignment_statement: variable ASSIGN expr
+empty:
+expr: term ((PLUS|MINUS) term)*
+term: factor ((MUL|DIV) factor)*
+factor: NUMBER | (PLUS|MINUS) factor | L_PAREN expr R_PAREN | variable
+variable: WORD

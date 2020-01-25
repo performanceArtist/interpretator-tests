@@ -1,4 +1,4 @@
-import { Token } from './calc/lexer';
+import { Token } from './lexer';
 import { ByRules } from './ByRules/ByRulesUnary';
 
 export function arithmetic(tokens: readonly Token[]) {

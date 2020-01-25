@@ -1,10 +1,10 @@
 /*
 expr: term ((PLUS|MINUS) term)*
 term: factor ((MUL|DIV) factor)*
-factor: NUMBER
+factor: NUMBER | L_PAREN expr R_PAREN
 */
 
-import { Lexer, Token, TokenType } from '../calc/lexer';
+import { Lexer, Token, TokenType } from '../lexer';
 
 class ByRules {
   private index = 0;
@@ -22,7 +22,7 @@ class ByRules {
     return this.expr();
   }
 
-  expr() {
+  expr(): number {
     let result = this.term();
 
     while (
@@ -67,9 +67,16 @@ class ByRules {
   }
 
   factor() {
-    const { value } = this.current;
-    this.eat('Number');
-    return value;
+    const { value, type } = this.current;
+    if (type === 'Number') {
+      this.eat('Number');
+      return value;
+    } else if (type === 'LeftParen') {
+      this.eat('LeftParen');
+      const result = this.expr();
+      this.eat('RightParen');
+      return result;
+    }
   }
 
   eat(type: TokenType) {

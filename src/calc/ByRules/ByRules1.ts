@@ -3,7 +3,7 @@ expr: factor((Plus|Minus)factor)*
 factor: INTEGER
 */
 
-import { Lexer, Token, TokenType } from '../calc/lexer';
+import { Lexer, Token, TokenType } from '../lexer';
 
 class ByRules {
   private index = 0;

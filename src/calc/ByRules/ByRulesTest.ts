@@ -1,11 +1,11 @@
 /*
 expr: term ((PLUS|MINUS) term)*
 term: factor ((MUL|DIV) factor)*
-factor: NUMBER | (PLUS|MINUS) factor | L_PAREN expr R_PAREN
+factor: NUMBER | L_PAREN expr R_PAREN
 */
 
-import { Token, TokenType } from '../calc/lexer';
-import { Value, BinaryOperator, UnaryOperator, AST, BinaryOperation } from '../ast';
+import { Token, TokenType } from '../lexer';
+import { Value, BinaryOperator, AST, BinaryOperation } from '../../ast';
 
 type RuleMap = Partial<Record<TokenType, BinaryOperation<any>>>;
 
@@ -75,12 +75,6 @@ class ByRules {
     if (type === 'Number') {
       this.eat('Number');
       return new Value(value);
-    } else if (type === 'Plus') {
-      this.eat('Plus');
-      return new UnaryOperator((a: number) => a, this.factor());
-    } else if (type === 'Minus') {
-      this.eat('Minus');
-      return new UnaryOperator((a: number) => a * (-1), this.factor());
     } else if (type === 'LeftParen') {
       this.eat('LeftParen');
       const node = this.expr();

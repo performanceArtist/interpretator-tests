@@ -4,26 +4,25 @@ term: factor ((MUL|DIV) factor)*
 factor: NUMBER | L_PAREN expr R_PAREN
 */
 
-import { Lexer, Token, TokenType } from '../calc/lexer';
+import { Token, TokenType } from '../lexer';
+import { Value, BinaryOperator, AST } from '../../ast';
 
 class ByRules {
   private index = 0;
   private current!: Token;
-  private tokens: readonly Token[] = [];
 
-  constructor(private input: string) {
-    const lexer = new Lexer(this.input);
-    this.tokens = lexer.getTokens();
-    console.log(this.tokens);
+  constructor(private tokens: readonly Token[]) {
     this.current = this.tokens[this.index];
   }
 
   evaluate() {
-    return this.expr();
+    const tree = this.expr();
+    console.log('AST:', tree, '\n');
+    return tree.visit();
   }
 
-  expr(): number {
-    let result = this.term();
+  private expr(): AST {
+    let node = this.term();
 
     while (
       this.current && this.current.type === 'Minus' || this.current.type === 'Plus'
@@ -32,20 +31,20 @@ class ByRules {
 
       if (type === 'Minus') {
         this.eat('Minus');
-        result -= this.term();
+        node = new BinaryOperator((a, b) => a - b, node, this.term())
       }
 
       if (type === 'Plus') {
         this.eat('Plus');
-        result += this.term();
+        node = new BinaryOperator((a, b) => a + b, node, this.term())
       }
     }
 
-    return result;
+    return node;
   }
 
-  term() {
-    let result = this.factor();
+  private term(): AST {
+    let node = this.factor();
 
     while (
       this.current && this.current.type === 'Mul' || this.current.type === 'Div'
@@ -54,32 +53,34 @@ class ByRules {
 
       if (type === 'Mul') {
         this.eat('Mul');
-        result *= this.factor();
+        node = new BinaryOperator((a, b) => a * b, node, this.factor())
       }
 
       if (type === 'Div') {
         this.eat('Div');
-        result /= this.factor();
+        node = new BinaryOperator((a, b) => a / b, node, this.factor())
       }
     }
 
-    return result;
+    return node;
   }
 
-  factor() {
+  private factor(): AST {
     const { value, type } = this.current;
     if (type === 'Number') {
       this.eat('Number');
-      return value;
+      return new Value(value);
     } else if (type === 'LeftParen') {
       this.eat('LeftParen');
-      const result = this.expr();
+      const node = this.expr();
       this.eat('RightParen');
-      return result;
+      return node;
+    } else {
+      throw new Error('Invalid expression');
     }
   }
 
-  eat(type: TokenType) {
+  private eat(type: TokenType) {
     if (this.current.type === type) {
       this.index += 1;
       this.current = this.tokens[this.index] || { type: 'STOP' };
