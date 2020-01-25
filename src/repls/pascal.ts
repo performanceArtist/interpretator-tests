@@ -12,7 +12,7 @@ export function startPascalRepl() {
     prompt: '> ',
     terminal: true,
     eval: (cmd, _, __, callback) => {
-      const lexer = new PascalLexer(cmd.trim());
+      const lexer = new PascalLexer(cmd.trim(), false);
       const tokens = lexer.getTokens();
       const interpreter = new PascalParser(tokens);
 

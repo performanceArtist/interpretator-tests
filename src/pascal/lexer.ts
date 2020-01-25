@@ -15,18 +15,22 @@ function isNumber(input?: string) {
 }
 
 class Lexer {
-  constructor(private input: string) {}
+  constructor(private input: string, private caseSensitive = true) {
+    this.parseToken = this.parseToken.bind(this);
+  }
 
   public getTokens(): TokenPattern {
     return this.splitInput().map(this.parseToken);
   }
 
   private splitInput() {
-    return this.input.split(' ').reduce<string[]>((acc, char, index, input) => {
-      if (char === ' ' || char === '\n') {
-        return acc;
-      }
+    const withSpaces = this.input.replace(/(\S+)([;\.])/g, '$1 $2');
+    const split = withSpaces.match(/\S+/g);
+    if (!split) {
+      throw new Error('Invalid string');
+    }
 
+    return [...split].reduce<string[]>((acc, char) => {
       const keywordMatch = Object.keys(wordMap).reduce((token, key: PlainTokenType) => {
         return char === wordMap[key]
           ? wordMap[key]
@@ -58,7 +62,11 @@ class Lexer {
     const identificator: IDToken = { type: 'ID', value: input };
 
     return Object.keys(wordMap).reduce((token, key: PlainTokenType) => {
-      return wordMap[key] === input
+      const comparison = this.caseSensitive
+        ? wordMap[key] === input
+        : wordMap[key].toLowerCase() === input.toLowerCase();
+
+      return comparison
         ? { type: key }
         : token;
     }, identificator);
