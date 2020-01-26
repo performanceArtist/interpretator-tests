@@ -1,4 +1,3 @@
-import { parsePascalFile } from './repls/parsePascalFile';
+import { startCalcRepl } from './repls/declCalc';
 
-const path = process.argv[2];
-parsePascalFile(path);
+startCalcRepl();
