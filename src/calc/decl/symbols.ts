@@ -1,75 +1,88 @@
 import { Value, BinaryOperator } from '../../ast';
-import { eat, ast, symbol, token } from './effects';
+import { eat, ast, symbol, node, token } from './effects';
 
 export function* expr() {
-  let node = yield symbol('term');
-  const current = yield token();
+  let currentToken = yield token();
+  yield symbol('term');
+  currentToken = yield token();
 
   while (
-    current && current.type === 'Minus' || current.type === 'Plus'
+    currentToken && currentToken.type === 'Minus' || currentToken.type === 'Plus'
   ) {
-    const { type } = current;
+    const { type } = currentToken;
+    const left = yield node();
 
     if (type === 'Minus') {
       yield eat('Minus');
-      const nterm = yield symbol('term');
-      node = yield ast(
+      yield symbol('term');
+      const right = yield node();
+
+      yield ast(
         BinaryOperator,
         (a: number, b: number) => a - b,
-        node.value,
-        nterm.value
+        left,
+        right
       );
     }
 
     if (type === 'Plus') {
       yield eat('Plus');
-      const nterm = yield symbol('term');
+      yield symbol('term');
+      const right = yield node();
 
-      node = yield ast(
+      yield ast(
         BinaryOperator,
         (a: number, b: number) => a + b,
-        node.value,
-        nterm.value
+        left,
+        right
       );
     }
-  }
 
-  return node;
+    currentToken = yield token();
+  }
 }
 
 export function* term() {
-  let node = yield symbol('factor');
-  const current = yield token();
+  let currentToken = yield token();
+  if (currentToken.type !== 'stop') {
+    yield symbol('factor');
+  }
+  currentToken = yield token();
 
   while (
-    current && current.type === 'Mul' || current.type === 'Div'
+    currentToken && currentToken.type === 'Mul' || currentToken.type === 'Div'
   ) {
-    const { type } = current;
+    const { type } = yield token();
+    const left = yield node();
 
     if (type === 'Mul') {
       yield eat('Mul');
-      const nterm = yield symbol('factor');
-      node = yield ast(
+      yield symbol('factor');
+      const right = yield node();
+
+      yield ast(
         BinaryOperator,
         (a: number, b: number) => a * b,
-        node,
-        nterm
+        left,
+        right
       );
     }
 
     if (type === 'Div') {
       yield eat('Div');
-      const nterm = yield symbol('factor');
-      node = yield ast(
+      yield symbol('factor');
+      const right = yield node();
+
+      yield ast(
         BinaryOperator,
         (a: number, b: number) => a / b,
-        node,
-        nterm
+        left,
+        right
       );
     }
-  }
 
-  return node;
+    currentToken = yield token();
+  }
 }
 
 export function* factor() {
@@ -82,8 +95,6 @@ export function* factor() {
     yield eat('LeftParen');
     yield symbol('expr');
     yield eat('RightParen');
-  } else {
-    throw new Error('Invalid expression');
   }
 }
 

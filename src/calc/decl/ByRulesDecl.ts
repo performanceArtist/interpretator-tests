@@ -6,33 +6,30 @@ factor: NUMBER | L_PAREN expr R_PAREN
 
 import { Token, TokenType } from '../lexer';
 import { Effect } from './effects';
+import { AST } from '../../ast';
 import { getSymbol, expr } from './symbols';
 
 class ByRules {
   private index = 0;
   private current!: Token;
-  private effects: Effect[] = [];
-  private STOP = false;
+  private lastNode!: AST<any>;
 
   constructor(private tokens: readonly Token[]) {
     this.current = this.tokens[this.index];
   }
 
   evaluate() {
-    const tree = this.eval(expr);
-    console.log('TREE:', tree);
+    this.eval(expr, true);
+    console.log('TREE:', this.lastNode, this.lastNode.visit());
   }
 
-  private eval(term: () => IterableIterator<Effect>) {
+  private eval(term: () => IterableIterator<Effect>, firstPass = false) {
     const it = term();
     let result = it.next();
-    let lastAst;
 
-    while (!result.done && !this.STOP) {
+    while (!result.done) {
       const effect = result.value;
-      this.effects.push(effect);
-
-      console.log('Effect:', effect);
+      console.log('EFFECT:', effect);
 
       switch (effect.type) {
         case 'eat':
@@ -41,34 +38,30 @@ class ByRules {
           break;
         case 'ast':
           const astNode = new effect.constructor(...effect.args);
-          lastAst = astNode;
           result = it.next(astNode);
+          this.lastNode = astNode;
           break;
         case 'token':
-          result = it.next(this.current);
+          result = it.next({ ...this.current });
           break;
         case 'symbol':
           const symbol = getSymbol(effect.symbol);
-          const val = this.eval(symbol);
-          console.log('NODE', val, val.value);
-          result = it.next(val);
+          const node = this.eval(symbol);
+          result = it.next(node);
+          break;
+        case 'node':
+          result = it.next(this.lastNode);
           break;
         default:
           throw new Error('Unknown type');
       }
     }
-
-    return lastAst || result;
   }
 
   private eat(type: TokenType) {
     if (this.current.type === type) {
       this.index += 1;
       this.current = this.tokens[this.index] || { type: 'STOP' };
-    } else {
-      console.log('STOP');
-      this.STOP = true;
-      return;
     }
   }
 }
