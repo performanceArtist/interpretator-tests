@@ -1,3 +1,3 @@
-import { startCalcRepl } from './repls/declCalc';
+import { startCalcRepl } from './repls/leffCalc';
 
 startCalcRepl();
