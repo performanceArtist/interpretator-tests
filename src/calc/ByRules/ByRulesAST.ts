@@ -25,18 +25,19 @@ class ByRules {
     let node = this.term();
 
     while (
-      this.current && this.current.type === 'Minus' || this.current.type === 'Plus'
+      (this.current && this.current.type === 'Minus') ||
+      this.current.type === 'Plus'
     ) {
       const { type } = this.current;
 
       if (type === 'Minus') {
         this.eat('Minus');
-        node = new BinaryOperator((a, b) => a - b, node, this.term())
+        node = new BinaryOperator((a, b) => a - b, node, this.term());
       }
 
       if (type === 'Plus') {
         this.eat('Plus');
-        node = new BinaryOperator((a, b) => a + b, node, this.term())
+        node = new BinaryOperator((a, b) => a + b, node, this.term());
       }
     }
 
@@ -47,18 +48,19 @@ class ByRules {
     let node = this.factor();
 
     while (
-      this.current && this.current.type === 'Mul' || this.current.type === 'Div'
+      (this.current && this.current.type === 'Mul') ||
+      this.current.type === 'Div'
     ) {
       const { type } = this.current;
 
       if (type === 'Mul') {
         this.eat('Mul');
-        node = new BinaryOperator((a, b) => a * b, node, this.factor())
+        node = new BinaryOperator((a, b) => a * b, node, this.factor());
       }
 
       if (type === 'Div') {
         this.eat('Div');
-        node = new BinaryOperator((a, b) => a / b, node, this.factor())
+        node = new BinaryOperator((a, b) => a / b, node, this.factor());
       }
     }
 

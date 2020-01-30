@@ -31,11 +31,12 @@ class Lexer {
     }
 
     return [...split].reduce<string[]>((acc, char) => {
-      const keywordMatch = Object.keys(wordMap).reduce((token, key: PlainTokenType) => {
-        return char === wordMap[key]
-          ? wordMap[key]
-          : token;
-      }, null);
+      const keywordMatch = Object.keys(wordMap).reduce(
+        (token, key: PlainTokenType) => {
+          return char === wordMap[key] ? wordMap[key] : token;
+        },
+        null
+      );
 
       if (keywordMatch) {
         acc.push(keywordMatch);
@@ -56,7 +57,7 @@ class Lexer {
       return {
         type: 'Number',
         value: number
-      }
+      };
     }
 
     const identificator: IDToken = { type: 'ID', value: input };
@@ -66,9 +67,7 @@ class Lexer {
         ? wordMap[key] === input
         : wordMap[key].toLowerCase() === input.toLowerCase();
 
-      return comparison
-        ? { type: key }
-        : token;
+      return comparison ? { type: key } : token;
     }, identificator);
   }
 }

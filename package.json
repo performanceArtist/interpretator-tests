@@ -19,6 +19,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^13.1.6",
+    "prettier": "^1.19.1",
     "ts-node-dev": "^1.0.0-pre.44",
     "tslib": "^1.10.0",
     "typescript": "^3.7.4"

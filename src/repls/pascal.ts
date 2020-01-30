@@ -1,9 +1,6 @@
 import repl from 'repl';
 
-import {
-  Lexer as PascalLexer,
-  Parser as PascalParser
-} from '../pascal';
+import { Lexer as PascalLexer, Parser as PascalParser } from '../pascal';
 
 export function startPascalRepl() {
   console.log('Enter a valid Pascal expression');

@@ -7,7 +7,7 @@ export const division = ['Number', 'Div', 'Number'] as const;
 
 export type BinaryArithmetic<T extends Readonly<Pattern>> = {
   [key in keyof T]: {
-    type: T[key],
-    value: T[key] extends 'Number' ? number : undefined
-  }
+    type: T[key];
+    value: T[key] extends 'Number' ? number : undefined;
+  };
 };

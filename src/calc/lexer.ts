@@ -14,8 +14,8 @@ export type TokenType = Number | Operator | Unknown;
 
 export type Pattern = Readonly<TokenType[]>;
 export type Token = {
-  type: TokenType,
-  value?: any
+  type: TokenType;
+  value?: any;
 };
 export type TokenPattern = Readonly<Token[]>;
 
@@ -57,10 +57,10 @@ class Lexer {
       return {
         type: 'Number',
         value: number
-      }
+      };
     }
 
-    switch(input) {
+    switch (input) {
       case '+':
         return { type: 'Plus' };
       case '-':

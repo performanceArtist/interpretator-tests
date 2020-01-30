@@ -1,6 +1,6 @@
 export type EatEffect = {
-  type: 'eat',
-  token: string
+  type: 'eat';
+  token: string;
 };
 
 export function eat(type: string): EatEffect {

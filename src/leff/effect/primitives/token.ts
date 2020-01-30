@@ -1,9 +1,9 @@
 export type TokenEffect = {
-  type: 'token',
+  type: 'token';
 };
 
 export function token(): TokenEffect {
   return {
-    type: 'token',
+    type: 'token'
   };
 }

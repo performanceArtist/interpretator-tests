@@ -39,8 +39,13 @@ class Parser {
     return 'Unknown expression';
   }
 
-  private match<T extends Pattern>(pattern: T, tokens: TokenPattern): tokens is BinaryArithmetic<T> {
-    return pattern.every((type, index) => tokens[index] && type === tokens[index].type);
+  private match<T extends Pattern>(
+    pattern: T,
+    tokens: TokenPattern
+  ): tokens is BinaryArithmetic<T> {
+    return pattern.every(
+      (type, index) => tokens[index] && type === tokens[index].type
+    );
   }
 }
 

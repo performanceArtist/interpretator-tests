@@ -5,7 +5,13 @@ factor: NUMBER | (PLUS|MINUS) factor | L_PAREN expr R_PAREN
 */
 
 import { Token, TokenType } from '../lexer';
-import { Value, BinaryOperator, UnaryOperator, AST, BinaryOperation } from '../../ast';
+import {
+  Value,
+  BinaryOperator,
+  UnaryOperator,
+  AST,
+  BinaryOperation
+} from '../../ast';
 
 type RuleMap = Partial<Record<TokenType, BinaryOperation<any>>>;
 
@@ -14,7 +20,11 @@ class ByRules {
   private current!: Token;
   private expr: () => AST;
 
-  constructor(private tokens: readonly Token[], termMap: RuleMap, exprMap: RuleMap) {
+  constructor(
+    private tokens: readonly Token[],
+    termMap: RuleMap,
+    exprMap: RuleMap
+  ) {
     this.current = this.tokens[this.index];
     this.factor = this.factor.bind(this);
 
@@ -31,18 +41,12 @@ class ByRules {
 
   private getTerm(m: RuleMap, next: () => AST) {
     const predicate = (token: Token) =>
-      Object.keys(m).includes(token.type)
-        ? token.type
-        : null;
+      Object.keys(m).includes(token.type) ? token.type : null;
 
     const getNode = (type: TokenType, left: AST, right: AST) =>
       new BinaryOperator(m[type]!, left, right);
 
-    return this.getRule(
-      predicate,
-      next,
-      getNode
-    );
+    return this.getRule(predicate, next, getNode);
   }
 
   private getRule(
@@ -63,10 +67,10 @@ class ByRules {
         } else {
           return node;
         }
-      }
+      };
 
       return rec();
-    }
+    };
   }
 
   private factor(): AST {
@@ -80,7 +84,7 @@ class ByRules {
       return new UnaryOperator((a: number) => a, this.factor());
     } else if (type === 'Minus') {
       this.eat('Minus');
-      return new UnaryOperator((a: number) => a * (-1), this.factor());
+      return new UnaryOperator((a: number) => a * -1, this.factor());
     } else if (type === 'LeftParen') {
       this.eat('LeftParen');
       const node = this.expr();

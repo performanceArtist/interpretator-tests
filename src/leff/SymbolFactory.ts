@@ -1,12 +1,26 @@
- /*
+/*
 expr: term ((PLUS|MINUS) term)*
 term: factor ((MUL|DIV) factor)*
 factor: NUMBER | L_PAREN expr R_PAREN
 */
 
 import { EffectGenerator } from './effect/primitives';
-import { Rules, Combinators, Payload, sequence, or } from './effect/combinators';
-import { makeIf, makeSymbol, makeEat, makeWhile, makeUnaryAST, makeBinaryAST } from './effect/generators';
+import {
+  Rules,
+  Combinators,
+  Payload,
+  sequence,
+  or
+} from './effect/combinators';
+import {
+  makeIf,
+  makeSymbol,
+  makeEat,
+  makeWhile,
+  makeNullaryAST,
+  makeUnaryAST,
+  makeBinaryAST
+} from './effect/generators';
 
 class SymbolFactory<S extends string, T extends string> {
   constructor(private rules: Rules<S, T>) {
@@ -49,12 +63,15 @@ class SymbolFactory<S extends string, T extends string> {
         return function*() {
           for (let i = 0; i < steps.length; i++) {
             const step = steps[i];
-            yield * step();
+            yield* step();
           }
-        }
+        };
+      }
+      case 'nullaryAST': {
+        return makeNullaryAST();
       }
       case 'unaryAST': {
-        return makeUnaryAST();
+        return makeUnaryAST(rule.payload.nonTerm);
       }
       case 'binaryAST': {
         return makeBinaryAST(rule.payload.nonTerm);
@@ -70,9 +87,10 @@ class SymbolFactory<S extends string, T extends string> {
       }
       case 'cond': {
         const [condition, ...rest] = rule.payload;
-        const predicate = (condition as any).type === 'or'
-          ? this.parseCombinator(condition)
-          : this.parseCombinator(or(condition));
+        const predicate =
+          (condition as any).type === 'or'
+            ? this.parseCombinator(condition)
+            : this.parseCombinator(or(condition));
         return makeIf(predicate, this.parseCombinator(sequence(...rest)));
       }
       default: {

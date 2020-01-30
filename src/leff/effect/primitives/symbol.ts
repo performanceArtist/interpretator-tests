@@ -1,6 +1,6 @@
 export type SymbolEffect = {
-  type: 'symbol',
-  symbol: string
+  type: 'symbol';
+  symbol: string;
 };
 
 export function symbol(symbol: string): SymbolEffect {

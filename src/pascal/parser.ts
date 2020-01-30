@@ -81,7 +81,8 @@ class Parser {
     let node = this.term();
 
     while (
-      this.current && this.current.type === 'Minus' || this.current.type === 'Plus'
+      (this.current && this.current.type === 'Minus') ||
+      this.current.type === 'Plus'
     ) {
       const { type } = this.current;
 
@@ -103,18 +104,19 @@ class Parser {
     let node = this.factor();
 
     while (
-      this.current && this.current.type === 'Mul' || this.current.type === 'Div'
+      (this.current && this.current.type === 'Mul') ||
+      this.current.type === 'Div'
     ) {
       const { type } = this.current;
 
       if (type === 'Mul') {
         this.eat('Mul');
-        node = new BinaryOperator((a, b) => a * b, node, this.factor())
+        node = new BinaryOperator((a, b) => a * b, node, this.factor());
       }
 
       if (type === 'Div') {
         this.eat('Div');
-        node = new BinaryOperator((a, b) => a / b, node, this.factor())
+        node = new BinaryOperator((a, b) => a / b, node, this.factor());
       }
     }
 
@@ -132,7 +134,7 @@ class Parser {
       return new UnaryOperator((a: number) => a, this.factor());
     } else if (type === 'Minus') {
       this.eat('Minus');
-      return new UnaryOperator((a: number) => a * (-1), this.factor());
+      return new UnaryOperator((a: number) => a * -1, this.factor());
     } else if (type === 'LeftParen') {
       this.eat('LeftParen');
       const node = this.expr();

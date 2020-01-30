@@ -26,7 +26,8 @@ class ByRules {
     let result = this.term();
 
     while (
-      this.current && this.current.type === 'Minus' || this.current.type === 'Plus'
+      (this.current && this.current.type === 'Minus') ||
+      this.current.type === 'Plus'
     ) {
       const { type } = this.current;
 
@@ -48,7 +49,8 @@ class ByRules {
     let result = this.factor();
 
     while (
-      this.current && this.current.type === 'Mul' || this.current.type === 'Div'
+      (this.current && this.current.type === 'Mul') ||
+      this.current.type === 'Div'
     ) {
       const { type } = this.current;
 

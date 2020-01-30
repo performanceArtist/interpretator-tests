@@ -1,14 +1,14 @@
 import { AST } from '../../../ast';
 
 type Nodes = {
-  left: AST,
-  right: AST
+  left: AST;
+  right: AST;
 };
 
 export type BinaryASTEffect = {
-  type: 'binaryAST',
+  type: 'binaryAST';
   operator: string;
-  nodes: Nodes
+  nodes: Nodes;
 };
 
 export function binaryAST(operator: string, nodes: Nodes): BinaryASTEffect {

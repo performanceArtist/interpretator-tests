@@ -3,6 +3,7 @@ export type Combinators<T> =
   | ZeroOrMany<T>
   | Sequence<T>
   | Cond<T>
+  | NullaryAST
   | UnaryAST
   | BinaryAST;
 export type Payload<T> = Combinators<T> | T;
@@ -23,8 +24,14 @@ type Cond<T> = {
   type: 'cond';
   payload: Payload<T>[];
 };
+type NullaryAST = {
+  type: 'nullaryAST';
+};
 type UnaryAST = {
   type: 'unaryAST';
+  payload: {
+    nonTerm: string;
+  };
 };
 type BinaryAST = {
   type: 'binaryAST';
@@ -55,8 +62,15 @@ export const cond: <T>(...payload: Payload<T>[]) => Cond<T> = (...payload) => ({
   payload
 });
 
-export const unary = (): UnaryAST => ({
-  type: 'unaryAST'
+export const nullary = (): NullaryAST => ({
+  type: 'nullaryAST'
+});
+
+export const unary = (nonTerm: string): UnaryAST => ({
+  type: 'unaryAST',
+  payload: {
+    nonTerm
+  }
 });
 
 export const binary = (nonTerm: string): BinaryAST => ({

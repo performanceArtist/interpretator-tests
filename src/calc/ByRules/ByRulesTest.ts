@@ -14,7 +14,11 @@ class ByRules {
   private current!: Token;
   private expr: () => AST;
 
-  constructor(private tokens: readonly Token[], termMap: RuleMap, exprMap: RuleMap) {
+  constructor(
+    private tokens: readonly Token[],
+    termMap: RuleMap,
+    exprMap: RuleMap
+  ) {
     this.current = this.tokens[this.index];
     this.factor = this.factor.bind(this);
 
@@ -31,18 +35,12 @@ class ByRules {
 
   private getTerm(m: RuleMap, next: () => AST) {
     const predicate = (token: Token) =>
-      Object.keys(m).includes(token.type)
-        ? token.type
-        : null;
+      Object.keys(m).includes(token.type) ? token.type : null;
 
     const getNode = (type: TokenType, left: AST, right: AST) =>
       new BinaryOperator(m[type]!, left, right);
 
-    return this.getRule(
-      predicate,
-      next,
-      getNode
-    );
+    return this.getRule(predicate, next, getNode);
   }
 
   private getRule(
@@ -63,10 +61,10 @@ class ByRules {
         } else {
           return node;
         }
-      }
+      };
 
       return rec();
-    }
+    };
   }
 
   private factor(): AST {

@@ -6,7 +6,11 @@ type Tag = 'binary';
 class BinaryOperator<T> implements AST<BinaryOperation<T>, Tag, T> {
   public type: Tag = 'binary';
 
-  constructor(public value: BinaryOperation<T>, public left: AST, public right: AST) {}
+  constructor(
+    public value: BinaryOperation<T>,
+    public left: AST,
+    public right: AST
+  ) {}
 
   visit() {
     const a = this.left.visit();

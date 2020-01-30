@@ -4,9 +4,11 @@ export * from './eat';
 export * from './symbol';
 export * from './token';
 export * from './node';
+export * from './nullaryAST';
 export * from './unaryAST';
 export * from './binaryAST';
 
+import { NullaryASTEffect } from './nullaryAST';
 import { UnaryASTEffect } from './unaryAST';
 import { BinaryASTEffect } from './binaryAST';
 import { EatEffect } from './eat';
@@ -15,6 +17,7 @@ import { TokenEffect } from './token';
 import { NodeEffect } from './node';
 
 export type Effect =
+  | NullaryASTEffect
   | UnaryASTEffect
   | BinaryASTEffect
   | EatEffect
@@ -22,4 +25,8 @@ export type Effect =
   | TokenEffect
   | NodeEffect;
 
-export type EffectGenerator = () => Iterator<Effect, any, AST | { type: string, value?: any }>;
+export type EffectGenerator = () => Iterator<
+  Effect,
+  any,
+  AST | { type: string; value?: any }
+>;

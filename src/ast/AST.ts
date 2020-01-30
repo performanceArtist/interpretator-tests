@@ -4,4 +4,4 @@ export type AST<Value = any, Type = string, Visit = any> = {
   left?: AST;
   right?: AST;
   visit: () => Visit;
-}
+};

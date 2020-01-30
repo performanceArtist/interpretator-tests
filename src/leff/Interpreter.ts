@@ -1,28 +1,40 @@
 import { EffectGenerator } from './effect/primitives';
-import { AST, Value, BinaryOperator } from '../ast';
+import { AST } from '../ast';
 
 type AnyToken = {
   type: string;
   value?: any;
-}
+};
 
 type GeneratorMap = { [key: string]: EffectGenerator };
+
+type Arity = 'binary' | 'unary' | 'nullary';
+
+type NodeMaker<T extends Arity> = T extends 'nullary'
+  ? (value?: any) => AST
+  : T extends 'unary'
+  ? (node: AST) => AST
+  : (left: AST, right: AST) => AST;
+
+type NodeInfo<T extends Arity> = {
+  arity: T;
+  type: string;
+  nodeMaker: NodeMaker<T>;
+};
 
 class Interpreter {
   private index = 0;
   private current!: AnyToken;
   private nodes: AST[] = [];
-  private operations: {
-    [key: string]: (a: number, b: number) => number;
-  } = {};
+  private operations: NodeInfo<Arity>[] = [];
   private symbols!: GeneratorMap;
 
   constructor(private tokens: readonly AnyToken[]) {
     this.current = this.tokens[this.index];
   }
 
-  implement(type: string, operation: (a: number, b: number) => number) {
-    this.operations[type] = operation;
+  implement<T extends Arity>(arity: T, type: string, nodeMaker: NodeMaker<T>) {
+    this.operations.push({ arity, type, nodeMaker });
   }
 
   evaluate(main: EffectGenerator, symbols: GeneratorMap) {
@@ -48,16 +60,31 @@ class Interpreter {
           result = it.next();
           break;
         }
+        case 'nullaryAST': {
+          const operation = this.operations.find(
+            ({ arity, type }) =>
+              arity === 'nullary' && type === effect.token.type
+          );
+          const node = (operation as any).nodeMaker(effect.token);
+          this.nodes.push(node);
+          result = it.next();
+          break;
+        }
         case 'unaryAST': {
-          const node = new Value(this.tokens[this.index - 1].value);
+          const operation = this.operations.find(
+            ({ arity, type }) => arity === 'unary' && type === effect.token.type
+          );
+          const node = (operation as any).nodeMaker(this.nodes[this.nodes.length - 1]);
           this.nodes.push(node);
           result = it.next();
           break;
         }
         case 'binaryAST': {
           const { left, right } = effect.nodes;
-          const operation = this.operations[effect.operator];
-          const node = new BinaryOperator(operation, left, right);
+          const operation = this.operations.find(
+            ({ arity, type }) => arity === 'binary' && type === effect.operator
+          );
+          const node = operation!.nodeMaker(left, right);
 
           this.nodes.push(node);
           result = it.next();

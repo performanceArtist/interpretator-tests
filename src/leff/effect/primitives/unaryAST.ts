@@ -1,9 +1,11 @@
 export type UnaryASTEffect = {
-  type: 'unaryAST',
+  type: 'unaryAST';
+  token: { type: string; value?: any };
 };
 
-export function unaryAST(): UnaryASTEffect {
+export function unaryAST(token: { type: string; value?: any }): UnaryASTEffect {
   return {
     type: 'unaryAST',
+    token
   };
 }

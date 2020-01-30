@@ -19,28 +19,28 @@ type Operator = BinaryArithmetic | LeftParen | RightParen;
 export type Unknown = 'Unknown';
 export type UnknownToken = { type: Unknown };
 export type ID = 'ID';
-export type IDToken = { type: ID, value: string };
+export type IDToken = { type: ID; value: string };
 export type PlainTokenType = Operator | Keyword;
 export type TokenType = Number | Operator | Keyword | ID;
 export type WordMap = Record<PlainTokenType, string>;
 
 export type Pattern = Readonly<TokenType[]>;
 export type Token = {
-  type: TokenType | Unknown | ID,
-  value?: any
+  type: TokenType | Unknown | ID;
+  value?: any;
 };
 export type TokenPattern = Readonly<Token[]>;
 
 export const wordMap: WordMap = {
-  'Plus': '+',
-  'Minus': '-',
-  'Mul': '*',
-  'Div': '/',
-  'LeftParen': '(',
-  'RightParen': ')',
-  'Begin': 'BEGIN',
-  'End': 'END',
-  'Semi': ';',
-  'Dot': '.',
-  'Assign': ':='
+  Plus: '+',
+  Minus: '-',
+  Mul: '*',
+  Div: '/',
+  LeftParen: '(',
+  RightParen: ')',
+  Begin: 'BEGIN',
+  End: 'END',
+  Semi: ';',
+  Dot: '.',
+  Assign: ':='
 };
